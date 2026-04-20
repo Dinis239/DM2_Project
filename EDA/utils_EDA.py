@@ -5,14 +5,15 @@ import pandas as pd
 from scipy.stats import chi2_contingency
 
 
-def outlier_count_IQR(data: pd.DataFrame, variables: list,
+def outlier_count_IQR(data: pd.DataFrame,
+                      variables: list,
                       outlier_type: str = 'normal') -> pd.DataFrame:
     """
     Evaluate the outliers of a dataset
 
     Returns a dataframe including the variable names and the
     correspoding number of outliers, according to the outlier_type
-    parameter.
+    parameter (normal or extreme outliers).
 
     Parameters:
         ----------
@@ -25,12 +26,18 @@ def outlier_count_IQR(data: pd.DataFrame, variables: list,
          - outlier_count_df (pd.DataFrame): Dataframe containing outlier counts
          by variable.
     """
+    # Set the multiplier to be used for calculating outlier thresholds
+    # based on the outlier_type parameter
     multiplier = 1.5 if outlier_type.lower() == 'normal' else 3
+    # Obtaining Q1, Q3 and IQR values for all variables
     Q1 = data[variables].quantile(0.25)
     Q3 = data[variables].quantile(0.75)
     IQR = Q3 - Q1
+    # Calculating the threshold for outlier identification
     lower_threshold = Q1 - multiplier * IQR
     upper_threshold = Q3 + multiplier * IQR
+    # Obtaining and returning the dataframe of outlier counts
+    # by filtering using the thresholds 
     outliers = (data[variables] < lower_threshold) | \
                (data[variables] > (upper_threshold))
     return outliers.sum().to_frame(name='N Outliers')
@@ -158,6 +165,7 @@ def distribution_plot_grid(data: pd.DataFrame,
         plt.title(f'Column: {column} | Outliers: '
                   f'{outlier_count.loc[column, 'N Outliers']} '
                   'outliers')
+
         plt.subplot(122)
         sns.boxplot(x=column, data=data, color=color)
         plt.title(f'Column: {column} | Outliers: '
@@ -168,8 +176,6 @@ def distribution_plot_grid(data: pd.DataFrame,
 
 def cor_heatmap(cor: pd.DataFrame) -> None:
     '''
-    Plot a correlation heatmap
-
     Function to plot a correlation heatmap from a dataframe of correlations.
 
     Arguments:
@@ -178,7 +184,7 @@ def cor_heatmap(cor: pd.DataFrame) -> None:
 
     Returns:
         ----------
-         - None, although a heatmap is produced.
+         - None, although a heatmap plot is produced.
     '''
     mask = np.triu(np.ones_like(cor, dtype=bool))
     plt.figure(figsize=(20, 16))
@@ -217,10 +223,10 @@ def chi2_TestIndependence(data, target, variables, alpha=0.05):
         # If p-value < alpha, reject H0 (similarity across groups)
         # and keep feature
         if chi2_contingency(pd.crosstab(y, X_chi[var]))[1] < alpha:
-            chi2_check.append('Keep Feature')
+            chi2_check.append(1)
         else:
-            chi2_check.append('Discard Feature')
+            chi2_check.append(0)
 
     res = pd.DataFrame(data=[variables, chi2_check]).T
-    res.columns = ['Column', 'Suggestion']
+    res.columns = ['Column', 'chi2 Keep?']
     return res
