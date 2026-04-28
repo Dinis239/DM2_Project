@@ -3,9 +3,23 @@ import numpy as np
 from sklearn.model_selection import cross_validate
 from tqdm import tqdm
 from sklearn.model_selection import ParameterGrid
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
+class DataCleaner(BaseEstimator, TransformerMixin):
+    def __init__(self, num_cols:list):
+        self.num_cols = num_cols
 
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X = X.copy()
+        X = X.replace('?', np.nan)
+        X[self.num_cols] = X[self.num_cols].clip(lower=0)
+        X[self.num_cols] = np.round(X[self.num_cols])
+        return X
+        
 
 def run_gridsearch(grid: dict,
                    cv: any,

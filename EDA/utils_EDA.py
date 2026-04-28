@@ -103,7 +103,7 @@ def bar_charts_categorical(data: pd.DataFrame, variables: list, target: str):
     """
     for var in variables:
         cont_tab = pd.crosstab(data[var], data[target],
-                               margins=True)
+                               margins=True, dropna=True)
         categories = cont_tab.index[:-1]
 
         _ = plt.figure(figsize=(15, 5))
