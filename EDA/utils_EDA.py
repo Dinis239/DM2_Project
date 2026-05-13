@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import pandas as pd
-from scipy.stats import chi2_contingency
 
 
 def outlier_count_IQR(data: pd.DataFrame,
@@ -37,7 +36,7 @@ def outlier_count_IQR(data: pd.DataFrame,
     lower_threshold = Q1 - multiplier * IQR
     upper_threshold = Q3 + multiplier * IQR
     # Obtaining and returning the dataframe of outlier counts
-    # by filtering using the thresholds 
+    # by filtering using the thresholds
     outliers = (data[variables] < lower_threshold) | \
                (data[variables] > (upper_threshold))
     return outliers.sum().to_frame(name='N Outliers')
@@ -113,6 +112,7 @@ def bar_charts_categorical(data: pd.DataFrame, variables: list, target: str):
                      color="gray")
         p2 = plt.bar(categories, cont_tab.iloc[:-1, 1].values, 0.55,
                      bottom=cont_tab.iloc[:-1, 0], color="yellowgreen")
+        plt.xticks(rotation=45)
         plt.legend((p2[0], p1[0]), ('$y_i=1$', '$y_i=0$'))
         plt.title("Frequency bar chart")
         plt.xlabel(var)
@@ -128,6 +128,7 @@ def bar_charts_categorical(data: pd.DataFrame, variables: list, target: str):
         p1 = plt.bar(categories, obs_pct[0], 0.55, color="gray")
         p2 = plt.bar(categories, obs_pct[1], 0.55, bottom=obs_pct[0],
                      color="yellowgreen")
+        plt.xticks(rotation=45)
         plt.legend((p2[0], p1[0]), ('$y_i=1$', '$y_i=0$'))
         plt.title("Proportion bar chart")
         plt.xlabel(var)
@@ -139,7 +140,10 @@ def bar_charts_categorical(data: pd.DataFrame, variables: list, target: str):
 def distribution_plot_grid(data: pd.DataFrame,
                            variables: list,
                            color: str = None,
-                           edgecolor: str = 'black') -> None:
+                           edgecolor: str = 'black',
+                           target: str = None,
+                           target_hue_order: list = None,
+                           target_palette: dict = None) -> None:
     """
     Plot a grid a histogram and a boxplot for each variable based
     on the data.
@@ -151,6 +155,13 @@ def distribution_plot_grid(data: pd.DataFrame,
          - color (str, optional): Color for the bars. Defaults to None.
          - edgecolor (str, optional): Color for the bars edges.
          Defaults to 'black'.
+         - target (str, optional): The name of the target variable to
+         be used for plotting differnt bar segments, in the case of an analysis
+         for a classification problem.
+         - target_hue_order (list, optional): The order in which the bars for
+         the segments representing each level of the target should appear.
+         - target_palette (dict, optional): The pallete with the colors to be
+         plotted for each level of the target.
 
     Returns:
         ----------
@@ -160,8 +171,14 @@ def distribution_plot_grid(data: pd.DataFrame,
     for column in variables:
         _ = plt.figure(figsize=(15, 5))
         plt.subplot(121)
-        sns.histplot(x=column, data=data, color=color,
-                     edgecolor=edgecolor)
+        sns.histplot(x=column,
+                     data=data,
+                     color=color,
+                     edgecolor=edgecolor,
+                     hue=target,
+                     multiple='stack',
+                     hue_order=target_hue_order,
+                     palette=target_palette)
         plt.title(f'Column: {column} | Outliers: '
                   f'{outlier_count.loc[column, 'N Outliers']} '
                   'outliers')
@@ -192,41 +209,3 @@ def cor_heatmap(cor: pd.DataFrame) -> None:
                 cmap=sns.color_palette("coolwarm", as_cmap=True),
                 fmt='.2', mask=mask, vmin=-1, vmax=1)
     plt.show()
-
-
-def chi2_TestIndependence(data, target, variables, alpha=0.05):
-    '''
-    This function will follow the steps of chi-square to check if an
-    independent variable is an important predictor towards a dependent
-    variable. It receives the full dataset, the name of the dependent
-    variable and a list of predictors to test as well as the signifcance level
-    to be used for the test. It returns a dataframe containing a Keep or
-    Discard verdict for each feature
-
-    Parameters:
-        ----------
-         - data (pd.DataFrame): The DataFrame containing the data.
-         - target (str): The name of the dependent variable
-         - variables (list): The column names of the variables to be evaluated.
-         - alpha (float): The significance level to consider for the chi-square
-         test
-
-    Returns:
-        ----------
-        A dataframe containing the results of the test
-    '''
-    chi2_check = []
-    # Get the X and y datasets for the test
-    X_chi = data.drop(target, axis=1)
-    y = data[target]
-    for var in variables:
-        # If p-value < alpha, reject H0 (similarity across groups)
-        # and keep feature
-        if chi2_contingency(pd.crosstab(y, X_chi[var]))[1] < alpha:
-            chi2_check.append(1)
-        else:
-            chi2_check.append(0)
-
-    res = pd.DataFrame(data=[variables, chi2_check]).T
-    res.columns = ['Column', 'chi2 Keep?']
-    return res
