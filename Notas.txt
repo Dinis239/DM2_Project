@@ -1,1 +1,30 @@
 - TunedThresholdClassifier for threshold optimmization
+
+
+donor age: 18-100
+median home value: 4000 (restrito); 3000 (relaxado)
+median household income: 800 (restrito); 1000 (relaxado)
+pct owner occupied: 20 (restrito); 0 (relaxado)
+per capita income: 3500 (restrito); 5000 (relaxado)
+pct attribute 1: ?
+pct attribute 2: min:10 (restrito); min:100 (relaxado); max: 60 (restrito); max: 70 (relaxado)
+pct attribute 3: 70 (restrito); 80 (relaxado)
+pct attribute 4: 80 (restrito); 100 (relaxado)
+recent response prop: 0,55 (restrito); 0,70 (relaxado)
+recent avg gift amt: 70 (restrito); 45(relaxado)
+recent card response prop: 0,8 (restrito); não apanhei o relaxado 
+recent avg card gift amt: 70 (restrito); 45 (relaxado)
+recent response count: 8 (restrito); 0? (relaxado)
+recent card response count: 4 (restrito); 6 (relaxado)
+months since last prom resp: min: 100 (restrito); min: 0 (relaxado); max: 30 (restrito); max: 100 (relaxado)
+lifetime prom: 125 (restrito); 140 (relaxado)
+lifetime gift amount: 400 (restrito); 750 (relaxado)
+lifetime gift count: 30 (restrito); 45 (relaxado)
+lifetime max gift amt: 50 (restrito); 70 (relaxado)
+lifetime min gift amt: 30 (restrito); 40 (relaxado)
+last gift amt: 50 (restrito); 80 (relaxado)
+card prom 12: min: 3 (restrito); min: sem limite (relaxado); max: 7 (restrito); max: 10 (relaxado)
+number prom 12: min: 8 (restrito); min: 100 (relaxado); max: 20 (restrito); max: 30 (relaxado)
+months since last gift: min restrito: 10
+months since first gift: max restrito: 200
+file card gift: 20 (restrito); sem limite (relaxado)
