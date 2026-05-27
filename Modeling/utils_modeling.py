@@ -236,7 +236,7 @@ class NumericalFeatureSelector(BaseEstimator, TransformerMixin):
     def __init__(
         self,
         corr_threshold: float = 0.8,
-        cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=23),
+        cv=StratifiedKFold(n_splits=3, shuffle=True, random_state=23),
         random_state: int = 42,
     ):
         self.corr_threshold = corr_threshold
@@ -326,7 +326,7 @@ class NumericalFeatureSelector(BaseEstimator, TransformerMixin):
             solver="liblinear",
             max_iter=1000,
             scoring="f1",
-            random_state=self.random_state,
+            random_state=self.random_state
         ).fit(X, y)
 
         for col, coef in zip(X.columns, lasso.coef_[0]):
@@ -591,7 +591,8 @@ def run_parameter_search(grid: dict,
                          metrics: list,
                          results_file_dir: str = None,
                          model_file_dir: str = None,
-                         refit: bool = True) -> pd.DataFrame:
+                         refit: bool = True,
+                         n_jobs: int = None) -> pd.DataFrame:
     """Performs a manual parameter search with cross-validation.
 
     This allows the inclusion of a TQDM progress bar to track hyperparameter
@@ -649,7 +650,7 @@ def run_parameter_search(grid: dict,
                                               cv=cv,
                                               return_train_score=True,
                                               scoring=metrics,
-                                              n_jobs=-1,
+                                              n_jobs=n_jobs,
                                               error_score='raise')
             run_record['mean_fit_time'] = np.mean(crossval_results['fit_time'])
             for metric in metrics:
@@ -678,15 +679,18 @@ def run_parameter_search(grid: dict,
         results.append(run_record)
         # Creating the dataframe and sorting by the primary metric
         df_result = pd.DataFrame(results).sort_values(
-            f'mean_val_{primary_metric}', ascending=False)
-    # Checking whether there is a directory to export results
-    # and using pickle to export it if there is
-    if results_file_dir is not None:
-        df_result.to_pickle(results_file_dir)
+            f'mean_val_{primary_metric}', ascending=False, na_position='last')
+        # Checking whether there is a directory to export results
+        # and using pickle to export it if there is
+        if results_file_dir is not None:
+            df_result.to_pickle(results_file_dir)
+
     # Checking whether the best model is to be refitted on the full data
     # and grabbing the best parameter combination, applying it and
     # fitting the model if it is to be refitted.
-    if refit:
+    # Only do it if the best score comes from a successful run
+    # In other words, if there is at least one succesfull run
+    if refit and df_result.iloc[0]['status'] == 'Success':
         best_model = clone(model)
         best_model.set_params(**df_result.iloc[0]['params_config'])
         best_model.set_output(transform="pandas")
