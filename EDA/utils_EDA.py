@@ -7,23 +7,23 @@ import pandas as pd
 def outlier_count_IQR(data: pd.DataFrame,
                       variables: list,
                       outlier_type: str = 'normal') -> pd.DataFrame:
-    """
-    Evaluate the outliers of a dataset
+    """Evaluate the outliers of a dataset.
 
-    Returns a dataframe including the variable names and the
-    correspoding number of outliers, according to the outlier_type
-    parameter (normal or extreme outliers).
+    Returns a dataframe including the variable names and the corresponding
+    number of outliers, according to the `outlier_type` parameter (normal
+    or extreme outliers).
 
-    Parameters:
-        ----------
-         - data (pd.DataFrame): The DataFrame containing the data.
-         - variables (list): The column names of the variables to be evaluated.
-         - type (string): The type of outliers to evaluate.
-         Defaults to 'normal'.
+    Args:
+        data (pd.DataFrame): The DataFrame containing the data.
+        variables (list of str): The column names of the variables to be
+            evaluated.
+        outlier_type (str, optional): The type of outliers to evaluate.
+            Can be 'normal' or 'extreme'. Defaults to 'normal'.
+
     Returns:
-        ----------
-         - outlier_count_df (pd.DataFrame): Dataframe containing outlier counts
-         by variable.
+        pd.DataFrame: A DataFrame containing outlier counts by variable,
+            typically with columns for the variable name and its respective
+            outlier count.
     """
     # Set the multiplier to be used for calculating outlier thresholds
     # based on the outlier_type parameter
@@ -45,25 +45,23 @@ def outlier_count_IQR(data: pd.DataFrame,
 def outlier_filter_IQR(data: pd.DataFrame, variables: list,
                        outlier_type: str = 'normal',
                        return_dataframe: bool = False) -> None:
-    """
-    Evaluate the outliers of a dataset
+    """Evaluate the outliers of a dataset.
 
-    Prints the percentage of the dataset that is retained
-    after excluding outliers and can optionally return a
-    filtered DataFrame without outliers.
+    Prints the percentage of the dataset that is retained after excluding
+    outliers and can optionally return a filtered DataFrame without outliers.
 
-    Parameters:
-        ----------
-         - data (pd.DataFrame): The DataFrame containing the data.
-         - variables (list): The column names of the variables to be evaluated.
-         - type (string): The type of outliers to evaluate.
-         Defaults to 'normal'.
-         - return_dataframe(boolean): Whether to return the filtered dataset
-         without outliers.
+    Args:
+        data (pd.DataFrame): The DataFrame containing the data.
+        variables (list of str): The column names of the variables to be
+            evaluated.
+        outlier_type (str, optional): The type of outliers to evaluate.
+            Defaults to 'normal'.
+        return_dataframe (bool, optional): Whether to return the filtered
+            dataset without outliers. Defaults to False.
 
     Returns:
-        ----------
-        None, optionally a filtered Dataframe
+        pd.DataFrame or None: The filtered DataFrame without outliers if
+            return_dataframe is True, otherwise None.
     """
     multiplier = 1.5 if outlier_type.lower() == 'normal' else 3
     Q1 = data[variables].quantile(0.25)
@@ -83,22 +81,24 @@ def outlier_filter_IQR(data: pd.DataFrame, variables: list,
         return None
 
 
-def bar_charts_categorical(data: pd.DataFrame, variables: list, target: str):
-    """
-    Plot side-by-side frequency and proportion stacked bar charts for
-    categorical variables against a target.
+def bar_charts_categorical(data: pd.DataFrame,
+                           variables: list,
+                           target: str) -> None:
+    """Plot side-by-side frequency and proportion stacked bar charts.
 
-    Parameters:
-        ----------
-         - data (pd.DataFrame): The DataFrame containing the data.
-         - variables (list): The column names of the categorical variables
-         to be plotted.
-         - target (str): The column name of the binary target variable used
-         for stacking.
+    Plots side-by-side frequency and proportion stacked bar charts for
+    categorical variables against a binary target variable.
+
+    Args:
+        data (pd.DataFrame): The DataFrame containing the data.
+        variables (list of str): The column names of the categorical variables
+            to be plotted.
+        target (str): The column name of the binary target variable used
+            for stacking.
 
     Returns:
-        ----------
-         None, but a plot is produced for each variable.
+        None: This function does not return a value, it directly displays
+            the generated plots.
     """
     for var in variables:
         cont_tab = pd.crosstab(data[var], data[target],
@@ -144,28 +144,30 @@ def distribution_plot_grid(data: pd.DataFrame,
                            target: str = None,
                            target_hue_order: list = None,
                            target_palette: dict = None) -> None:
-    """
-    Plot a grid a histogram and a boxplot for each variable based
-    on the data.
+    """Plot a grid containing a histogram and a boxplot for each variable.
 
-    Parameters:
-        ----------
-         - data (pd.DataFrame): The DataFrame containing the data.
-         - variables (list): The column names of the variables to be plotted.
-         - color (str, optional): Color for the bars. Defaults to None.
-         - edgecolor (str, optional): Color for the bars edges.
-         Defaults to 'black'.
-         - target (str, optional): The name of the target variable to
-         be used for plotting differnt bar segments, in the case of an analysis
-         for a classification problem.
-         - target_hue_order (list, optional): The order in which the bars for
-         the segments representing each level of the target should appear.
-         - target_palette (dict, optional): The pallete with the colors to be
-         plotted for each level of the target.
+    Generates and displays a grid layout of histograms and boxplots for the
+    specified variables.
+
+    Args:
+        data (pd.DataFrame): The DataFrame containing the data.
+        variables (list of str): The column names of the variables to be
+            plotted.
+        color (str, optional): Color for the bars. Defaults to None.
+        edgecolor (str, optional): Color for the bar edges.
+            Defaults to 'black'.
+        target (str, optional): The name of the target variable to be used for
+            plotting different bar segments in a classification analysis.
+            Defaults to None.
+        target_hue_order (list, optional): The order in which the bars for
+            the segments representing each level of the target should appear.
+            Defaults to None.
+        target_palette (dict, optional): The palette with the colors to be
+            plotted for each level of the target. Defaults to None.
 
     Returns:
-        ----------
-         None, but a plot is produced
+        None: This function does not return a value, it directly renders
+            the plot grid.
     """
     outlier_count = outlier_count_IQR(data, variables, outlier_type='normal')
     for column in variables:
@@ -192,17 +194,14 @@ def distribution_plot_grid(data: pd.DataFrame,
 
 
 def cor_heatmap(cor: pd.DataFrame) -> None:
-    '''
-    Function to plot a correlation heatmap from a dataframe of correlations.
+    """Plot a correlation heatmap from a dataframe of correlations.
 
-    Arguments:
-        ----------
-         - cor(pd.DataFrame): DataFrame of correlations between variables
+    Generates and displays a heatmap visualization representing the correlation
+    coefficients between variables provided in the input DataFrame.
 
-    Returns:
-        ----------
-         - None, although a heatmap plot is produced.
-    '''
+    Args:
+        cor (pd.DataFrame): DataFrame of correlations between variables.
+    """
     mask = np.triu(np.ones_like(cor, dtype=bool))
     plt.figure(figsize=(20, 16))
     sns.heatmap(data=cor, annot=True,
