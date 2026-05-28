@@ -201,6 +201,10 @@ def cor_heatmap(cor: pd.DataFrame) -> None:
 
     Args:
         cor (pd.DataFrame): DataFrame of correlations between variables.
+
+    Returns:
+        None: This function does not return a value, it directly renders
+        the heatmap plot.
     """
     mask = np.triu(np.ones_like(cor, dtype=bool))
     plt.figure(figsize=(20, 16))
