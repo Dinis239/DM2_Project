@@ -1,11 +1,5 @@
-- TunedThresholdClassifier for threshold optimmization
 - Check table in EDA
-- Separate Feature Selectors:
-    - chi2 for categorical
-    - Correlation, Lasso (L1 LogisticRegression) and RFE for numerical 
-- Add optional skewness correction
 - Add section to EDA exploring and explaining long decimals 
-- Add feature creation section to EDA
 - Add Month consistency checking
 
 
