@@ -66,7 +66,7 @@ class DataCleaner(BaseEstimator, TransformerMixin):
         Returns:
             self: Returns the instance itself.
         """
-        self.feature_names_in = []
+        self.feature_names_in_ = []
         return self
 
     def transform(self, X):
