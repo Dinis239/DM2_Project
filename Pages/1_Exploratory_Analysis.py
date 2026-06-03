@@ -1,8 +1,9 @@
+from Modeling.utils_modeling import DataCleaner
 import os
-import pickle
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import numpy as np
 
 
 # Defining the column types for relevant plots and filter types
@@ -99,19 +100,16 @@ DISPLAY_TO_VAR = {col_mapped: og_col for og_col, col_mapped in
                   COLUMN_MAP.items()}
 
 
-# Loading the data
-@st.cache_data
-def load_and_clean_data(file_path, cleaner_path):
+# Creating the function to load the data
+def load_and_clean_data(file_path, cleaner):
     """Loads raw data, applies data cleaner pipeline, and forces formatting."""
     try:
         raw_data = pd.read_csv(file_path)
         # Fail-safe just in case the cleaner path doesn't exist
-        if os.path.exists(cleaner_path):
-            with open(cleaner_path, 'rb') as f:
-                cleaner = pickle.load(f)
+        if cleaner is not None:
             cleaned_df = cleaner.transform(raw_data)
         else:
-            st.warning("Data cleaner pickle file not found. Proceeding with"
+            st.warning("Data cleaner not found. Proceeding with"
                        "standard mapping.")
             cleaned_df = raw_data.copy()
 
@@ -145,12 +143,26 @@ def load_and_clean_data(file_path, cleaner_path):
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\
     if '__file__' in locals() else os.getcwd()
 FILE_PATH = os.path.join(BASE_DIR, 'Files', 'donors_train.csv')
-CLEANER_PATH = os.path.join(BASE_DIR, 'Files', 'Pickle Files',
-                            'data_cleaner.pkl')
 
+# Creatinga  DataCleaner instance
+# Identical to our saved one, but
+# trying to read the pickle file in
+# this python script was failing
+categorical_admissible_values = {
+    "DONOR_GENDER": ["M", "F", "U"],
+    "PEP_STAR": [0, 1],
+    "RECENCY_STATUS_96NK": ["S", "A", "E", "F", "N", "L"],
+    "RECENT_STAR_STATUS": [0, 1],
+    "SES": np.arange(1, 6),
+    "URBANICITY": ["S", "T", "U", "R", "C"],
+    "INCOME_GROUP": np.arange(1, 8),
+    "WEALTH_RATING": np.arange(0, 10)
+}
+data_cleaner = DataCleaner(
+    categorical_cols_values=categorical_admissible_values)
 
 # Running the data loading function
-data_for_analysis = load_and_clean_data(FILE_PATH, CLEANER_PATH)
+data_for_analysis = load_and_clean_data(FILE_PATH, data_cleaner)
 
 # if the data is empty stop the dashboard
 if data_for_analysis.empty:
@@ -303,7 +315,7 @@ if filtered_df.empty:
 st.title("📊 CSA Donor Behavior Analysis Dashboard")
 st.markdown(f"Database Total Universe: **{data_for_analysis.shape[0]}** "
             "baseline unique profiles.")
-st.header("Quick Filtered Cohort Summary")
+st.header("Quick Filtered Summary")
 
 # Creating a 4 column wide layout
 col1, col2, col3, col4 = st.columns(4)
@@ -330,7 +342,7 @@ with col4:
                        filtered_df.shape[0]) * 100
     else:
         pct_donated = 0.0
-    st.metric(label="Conversion Yield Rate", value=f"{round(pct_donated, 1)}%")
+    st.metric(label="Donation Rate", value=f"{round(pct_donated, 1)}%")
 
 st.divider()
 
