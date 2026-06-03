@@ -36,7 +36,11 @@ In this project, we will tackle the task of opimtimizing the Civic Support Assoc
 
 # Project Execution
 
-If you wish to run the project locally, we recommend creating a virtual environment with Python version 3.12.4 as that was the version used during development, ipython and pip. Then using pip o install all required packages from the requirements.txt file.
+If you wish to run the project locally, we recommend creating a virtual environment with Python version 3.12.4 as that was the version used during development, ipython and pip. Then using pip o install all required packages from the requirements.txt file. In the Anaconda prompt, this would be as follows:
+- 1 - Run the following command: conda create --name DM2_Group12_2025env python=3.12.4 ipython pip - You may change the name
+- 2 - Run the following command: conda activate DM2_Group12_2025env
+- 3 - Within the anaconda prompt navigate to where the folder is, entering the folder. Copy the path of the delivery folder and put "cd" followed by the path in the prompt
+- 4 - Run the following command : pip install -r requirements.txt
 
 
 # Project Repository Structure
