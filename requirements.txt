@@ -38,7 +38,6 @@ docopt==0.6.2
 etelemetry==0.3.1
 executing==2.2.1
 fastapi==0.136.1
-fg-data-profiling==4.19.1
 filelock==3.16.1
 filetype==1.2.0
 Flask==3.1.3
