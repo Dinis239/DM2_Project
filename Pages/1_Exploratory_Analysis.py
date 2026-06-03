@@ -1,10 +1,9 @@
-from Modeling.utils_modeling import DataCleaner
 import os
-import streamlit as st
+import numpy as np
 import pandas as pd
 import plotly.express as px
-import numpy as np
-
+import streamlit as st
+from Modeling.utils_modeling import DataCleaner
 
 # Defining the column types for relevant plots and filter types
 
@@ -24,8 +23,8 @@ PCT_NEIGHBORHOOD = [
 CORE_COUNT = [
     'CHILDREN', 'NUMBER_PROM_12', 'CARD_PROM_12', 'RECENT_RESPONSE_COUNT',
     'RECENT_CARD_RESPONSE_COUNT', 'LIFETIME_PROM', 'LIFETIME_CARD_PROM',
-    'LIFETIME_GIFT_COUNT', 'MONTHS_SINCE_LAST_GIFT', 'MONTHS_SINCE_FIRST_GIFT',
-    'MONTHS_SINCE_LAST_PROM_RESP'
+    'LIFETIME_GIFT_COUNT', 'MONTHS_SINCE_LAST_GIFT',
+    'MONTHS_SINCE_FIRST_GIFT', 'MONTHS_SINCE_LAST_PROM_RESP'
 ]
 # Ratios and rates
 CORE_RATIOS = [
@@ -144,7 +143,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\
     if '__file__' in locals() else os.getcwd()
 FILE_PATH = os.path.join(BASE_DIR, 'Files', 'donors_train.csv')
 
-# Creatinga  DataCleaner instance
+# Creating a  DataCleaner instance
 # Identical to our saved one, but
 # trying to read the pickle file in
 # this python script was failing
@@ -193,10 +192,19 @@ def apply_filters(dataframe):
             # Convert the binary HOME_OWNER variable options
             # to better display options
             if col_name == 'HOME_OWNER':
-                binary_map = {1: "Homeowner", 0: "Non-Homeowner"}
-                reverse_binary_map = {"Homeowner": 1, "Non-Homeowner": 0}
+                binary_map = {
+                    1: "Homeowner",
+                    0: "Non-Homeowner",
+                    "Unknown": "Unknown"
+                }
+                reverse_binary_map = {
+                    "Homeowner": 1,
+                    "Non-Homeowner": 0,
+                    "Unknown": "Unknown"
+                }
 
-                unique_values = dataframe[col_name].dropna().unique().tolist()
+                unique_values = dataframe[col_name].fillna("Unknown")\
+                    .unique().tolist()
                 options_display = [binary_map.get(val, str(val)) for val in
                                    unique_values]
                 # Creating the sidebar filter
@@ -210,13 +218,28 @@ def apply_filters(dataframe):
                 selected_values = [reverse_binary_map.get(x, x) for x in
                                    selected_display]
 
+                # Applying the filter
+                df_filtered = df_filtered[
+                    df_filtered[col_name].fillna("Unknown")
+                    .isin(selected_values)
+                ]
+
             # Convert the binary PEP_STAR variable options
             # to better display options
             elif col_name == 'PEP_STAR':
-                pep_map = {1: "Star Donor", 0: "Standard Donor"}
-                reverse_pep_map = {"Star Donor": 1, "Standard Donor": 0}
+                pep_map = {
+                    1: "Star Donor",
+                    0: "Standard Donor",
+                    "Unknown": "Unknown"
+                }
+                reverse_pep_map = {
+                    "Star Donor": 1,
+                    "Standard Donor": 0,
+                    "Unknown": "Unknown"
+                }
 
-                unique_values = dataframe[col_name].dropna().unique().tolist()
+                unique_values = dataframe[col_name].fillna("Unknown")\
+                    .unique().tolist()
                 options_display = [pep_map.get(val, str(val)) for val in
                                    unique_values]
 
@@ -231,13 +254,28 @@ def apply_filters(dataframe):
                 selected_values = [reverse_pep_map.get(x, x) for x in
                                    selected_display]
 
+                # Applying the filter
+                df_filtered = df_filtered[
+                    df_filtered[col_name].fillna("Unknown")
+                    .isin(selected_values)
+                ]
+
             # Convert the binary RECENT_STAR_STATUS variable options
             # to better display options
             elif col_name == 'RECENT_STAR_STATUS':
-                star_map = {1: "Achieved", 0: "Not Achieved"}
-                reverse_star_map = {"Achieved": 1, "Not Achieved": 0}
+                star_map = {
+                    1: "Achieved",
+                    0: "Not Achieved",
+                    "Unknown": "Unknown"
+                }
+                reverse_star_map = {
+                    "Achieved": 1,
+                    "Not Achieved": 0,
+                    "Unknown": "Unknown"
+                }
 
-                unique_values = dataframe[col_name].dropna().unique().tolist()
+                unique_values = dataframe[col_name].fillna("Unknown")\
+                    .unique().tolist()
                 options_display = [star_map.get(val, str(val)) for val in
                                    unique_values]
 
@@ -252,20 +290,29 @@ def apply_filters(dataframe):
                 selected_values = [reverse_star_map.get(x, x) for x in
                                    selected_display]
 
+                # Applying the filter
+                df_filtered = df_filtered[
+                    df_filtered[col_name].fillna("Unknown")
+                    .isin(selected_values)
+                ]
+
             else:
                 # Creating standard drop-down menus for the other columns
                 # since the variable values are already display friendly
                 # and don't require conversion
-                unique_values = dataframe[col_name].dropna().unique().tolist()
+                unique_values = dataframe[col_name].fillna("Unknown")\
+                    .unique().tolist()
                 selected_values = st.sidebar.multiselect(
                     display_name,
                     options=unique_values,
                     default=unique_values
                 )
 
-            # Applying the filter
-            df_filtered = df_filtered[df_filtered[col_name]
-                                      .isin(selected_values)]
+                # Applying the filter
+                df_filtered = df_filtered[
+                    df_filtered[col_name].fillna("Unknown")
+                    .isin(selected_values)
+                ]
 
     # Creating the Sliders for Numerical Attributes
     # We select 5 which we believe are more relevant
@@ -382,10 +429,10 @@ if feature_to_plot in ALL_NUMERICAL_VARS:
             x=feature_to_plot,
             color='Target Status',
             nbins=50,
-            title=f'Histogram Distribution: {feature_display_name} by Outcome'
-            'Group',
-            labels={feature_to_plot: feature_display_name, 'count': 'Record'
-                    'Frequency Count'},
+            title=f'Histogram Distribution: {feature_display_name} by '
+                  'Outcome Group',
+            labels={feature_to_plot: feature_display_name,
+                    'count': 'Record Frequency Count'},
             color_discrete_map=COLOR_MAP_TARGETS,
             barmode='stack'
         )
@@ -400,8 +447,8 @@ if feature_to_plot in ALL_NUMERICAL_VARS:
             y=feature_to_plot,
             color='Target Status',
             title=f'Statistical Dispersion Range: {feature_display_name}',
-            labels={feature_to_plot: feature_display_name, 'Target Status':
-                    'Campaign Performance Target'},
+            labels={feature_to_plot: feature_display_name,
+                    'Target Status': 'Campaign Performance Target'},
             color_discrete_map=COLOR_MAP_TARGETS
         )
 
@@ -411,6 +458,11 @@ if feature_to_plot in ALL_NUMERICAL_VARS:
 elif feature_to_plot in CORE_CATEGORICAL or feature_to_plot in CORE_FLAG:
     # Make a temporary copy for readable categorical value mapping
     plot_df = filtered_df.copy()
+
+    # Pre-emptively treat missing structural fields as "Unknown" strings
+    # so they map consistently into the grouping breakdown visualizations
+    plot_df[feature_to_plot] = plot_df[feature_to_plot].fillna("Unknown")
+
     # Changing flag variable values to more display friendly variants
     if feature_to_plot == 'HOME_OWNER':
         plot_df['HOME_OWNER'] = plot_df['HOME_OWNER']\
@@ -469,13 +521,14 @@ if len(numerical_display_options) < 2:
 # Create a side-by-side layout to add the selection boxes for the columns
 col_x, col_y = st.columns(2)
 
+# By default it selects age and median household income
 with col_x:
     scatter_x_display = st.selectbox("Select **X-axis** Variable:",
                                      options=numerical_display_options,
-                                     index=0)
+                                     index=2)
 
 with col_y:
-    def_idx = 1 if len(numerical_display_options) > 1 else 0
+    def_idx = 13 if len(numerical_display_options) > 1 else 0
     scatter_y_display = st.selectbox("Select **Y-axis** Variable:",
                                      options=numerical_display_options,
                                      index=def_idx)
