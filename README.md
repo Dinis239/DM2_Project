@@ -1,4 +1,6 @@
-**Project:** Data Mining II (2025/26)
+# Reach for Change - Predicting Donor Response to Optimize Outreach for Social Good
+
+**Course Unit:** Data Mining II (2025/26)
 
 **Group Number:** 12
 
@@ -34,7 +36,7 @@ In this project, we will tackle the task of opimtimizing the Civic Support Assoc
 
 # Project Execution
 
-If you wish to run the project locally, we recommend creating a virtual environment with Python version 3.12.4, ipython and pip. Then using pip o install all required packages from the requirements.txt file.
+If you wish to run the project locally, we recommend creating a virtual environment with Python version 3.12.4 as that was the version used during development, ipython and pip. Then using pip o install all required packages from the requirements.txt file.
 
 
 # Project Repository Structure
