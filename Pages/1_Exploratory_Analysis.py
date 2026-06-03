@@ -117,13 +117,12 @@ def load_and_clean_data(file_path, cleaner):
         for col in CORE_COUNT:
             if col in cleaned_df.columns:
                 cleaned_df[col] = pd.to_numeric(cleaned_df[col],
-                                                errors='coerce')\
-                                                .fillna(0).astype(int)
+                                                errors='coerce')
 
         for col in CORE_RATIOS + CORE_NUMERICAL:
             if col in cleaned_df.columns:
                 cleaned_df[col] = pd.to_numeric(cleaned_df[col],
-                                                errors='coerce').fillna(0.0)
+                                                errors='coerce')
 
         # Map target classes to readable text labels
         if TARGET_COL in cleaned_df.columns:
@@ -341,9 +340,13 @@ def apply_filters(dataframe):
                 format="%d"
             )
 
-            # Apply the filter
-            df_filtered = df_filtered[(df_filtered[col_name] >= val_range[0]) &
-                                      (df_filtered[col_name] <= val_range[1])]
+            # Apply the filter if the user changed the slider settings.
+            # If left at default full span, rows with NaN values are retained.
+            if val_range[0] > min_val or val_range[1] < max_val:
+                df_filtered = df_filtered[
+                    (df_filtered[col_name] >= val_range[0]) &
+                    (df_filtered[col_name] <= val_range[1])
+                ]
 
     return df_filtered
 
