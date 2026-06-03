@@ -12,7 +12,7 @@ st.set_page_config(
 
 st.title("📊 CSA Donor Behavior & Conversion Dashboard")
 st.markdown("""
-Welcome to the **Charity/Donor Behavior Analysis Engine**. This interactive
+Welcome to the **Charity/Donor Behavior Analysis Dashboard**. This interactive
             application provides a deep-dive exploratory interface and machine
             learning pipeline to understand donor demographics, tracking
             metrics, and predicting conversion yields for optimization
