@@ -11,3 +11,4 @@ streamlit
 plotly
 statsmodels
 ipywidgets
+scipy==1.17.1
