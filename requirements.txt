@@ -93,7 +93,7 @@ numpy==2.4.6
 openai==1.58.1
 openstep_parser==2.0.1
 orjson==3.10.12
-packaging==26.2
+packaging==24.2
 pandas==3.0.3
 parso==0.8.6
 pathlib==1.0.1
