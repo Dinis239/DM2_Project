@@ -34,11 +34,11 @@ In recent years, nonprofit organizations have faced a growing challenge: while c
 
 In this project, we will tackle the task of opimtimizing the Civic Support Association's process for contacting portential donors, the goal is to develop machine learning pipelines that can help the Association target the correct potential donors to maximize the donations they bring in.
 
-# Project Execution
+# Project Exe cution
 
 If you wish to run the project locally, we recommend creating a virtual environment with Python version 3.12.4 as that was the version used during development, ipython and pip. Then using pip o install all required packages from the requirements.txt file. In the Anaconda prompt, this would be as follows:
-- 1 - Run the following command: conda create --name DM2_Group12_2025env python=3.12.4 ipython pip - You may change the name
-- 2 - Run the following command: conda activate DM2_Group12_2025env
+- 1 - Run the following command: conda create --name DM2_Group12_2026env python=3.12.4 ipython pip - You may change the name
+- 2 - Run the following command: conda activate DM2_Group12_2026env
 - 3 - Within the anaconda prompt navigate to where the folder is, entering the folder. Copy the path of the delivery folder and put "cd" followed by the path in the prompt
 - 4 - Run the following command : pip install -r requirements.txt
 
@@ -90,3 +90,5 @@ DM2_PROJECT/
 ├── 0_Home.py                               # Main landing page for the Streamlit web application
 ├── Notas.txt                               # Scratchpad for internal project notes and reminders
 ├── Project_Guidelines_DM2.pdf              # Project Guidleines
+├── README.md                               # Project documentation (this file)
+└── requirements.txt                        # Pinpointed library dependencies for environment replication
